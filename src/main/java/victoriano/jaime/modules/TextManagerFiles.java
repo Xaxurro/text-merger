@@ -5,6 +5,7 @@ import java.util.*;
 
 //Esta Clase deberia solo listar y seleccionar archivos
 public class TextManagerFiles {
+//    TODO Debe ser el path completo
     private static Set<String> searchDirectoryPathList = new HashSet<>();
     private static List<File> selectedFileList = new ArrayList<>();
 
@@ -45,8 +46,12 @@ public class TextManagerFiles {
         selectedFileList = new ArrayList<>();
     }
 
-    public File createFile(String filePath) throws IOException {
-        File newFile = new File(normalizeFilename(filePath));
+    public File createFile(String directoryTarget, String filename) throws IOException {
+        Optional<String> directoryOpt = searchDirectoryPathList.stream().filter(directory -> directory.equals(directoryTarget)).findFirst();
+        if (!directoryOpt.isPresent()) {
+            searchDirectoryPathList.add(directoryTarget);
+        }
+        File newFile = new File(directoryTarget + '/' + normalizeFilename(filename));
         newFile.createNewFile();
 
         return newFile;
