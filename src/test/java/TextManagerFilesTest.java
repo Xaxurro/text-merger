@@ -10,10 +10,10 @@ import java.io.IOException;
 
 class TextManagerFilesTest {
 
-    final String TEST_PATH = "src/test/resources/group 1";
+    final String TEST_DIR_PATH = "src/test/resources/group 1";
     @Test
     void test1_selectionSpecialCharacters() {
-        TextManagerFiles fm = new TextManagerFiles(TEST_PATH);
+        TextManagerFiles fm = new TextManagerFiles(TEST_DIR_PATH);
         fm.selectFile("test3");
         Assertions.assertEquals("test\n\n3\n", TextManager.generateText());
         fm.selectFile("test1");
@@ -24,7 +24,7 @@ class TextManagerFilesTest {
 
     @Test
     void test2_selection() {
-        TextManagerFiles fm = new TextManagerFiles(TEST_PATH);
+        TextManagerFiles fm = new TextManagerFiles(TEST_DIR_PATH);
         fm.selectFile("test1");
         fm.selectFile("test2");
         fm.selectFile("test1");
@@ -36,13 +36,13 @@ class TextManagerFilesTest {
 
     @Test
     void test3_writing() {
-        TextManagerFiles fm = new TextManagerFiles(TEST_PATH);
+        TextManagerFiles fm = new TextManagerFiles(TEST_DIR_PATH);
 
         File testFile5 = null;
         File testFile6 = null;
         try {
-            testFile5 = fm.createFile(TEST_PATH + "/test5");
-            testFile6 = fm.createFile(TEST_PATH + "/test6.txt");
+            testFile5 = fm.createFile(TEST_DIR_PATH, "test5");
+            testFile6 = fm.createFile(TEST_DIR_PATH, "test6.txt");
 
             Assertions.assertNotNull(testFile5);
             Assertions.assertNotNull(testFile6);
