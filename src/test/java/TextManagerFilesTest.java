@@ -1,25 +1,24 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import victoriano.jaime.modules.TextManagerReader;
-import victoriano.jaime.modules.TextManagerWriter;
 import victoriano.jaime.modules.TextManagerFiles;
-import victoriano.jaime.modules.TextManager;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 class TextManagerFilesTest {
 
-    final String TEST_DIR_PATH = "src/test/resources/group 1";
+    final File TEST_DIR_PATH = new File("src/test/resources/group 1");
     @Test
     void test1_selectionSpecialCharacters() {
         TextManagerFiles fm = new TextManagerFiles(TEST_DIR_PATH);
         fm.selectFile("test3");
-        Assertions.assertEquals("test\n\n3\n", TextManager.generateText());
+        Assertions.assertEquals("test\n\n3\n", fm.generateText());
         fm.selectFile("test1");
-        Assertions.assertEquals("test\n\n3\ntest1\n", TextManager.generateText());
+        Assertions.assertEquals("test\n\n3\ntest1\n", fm.generateText());
         fm.selectFile("test4");
-        Assertions.assertEquals("test\n\n3\ntest1\n\ntest4\n", TextManager.generateText());
+        Assertions.assertEquals("test\n\n3\ntest1\n\ntest4\n", fm.generateText());
     }
 
     @Test
@@ -28,10 +27,10 @@ class TextManagerFilesTest {
         fm.selectFile("test1");
         fm.selectFile("test2");
         fm.selectFile("test1");
-        Assertions.assertEquals("test1\ntest 2\ntest1\n", TextManager.generateText());
+        Assertions.assertEquals("test1\ntest 2\ntest1\n", fm.generateText());
 
         fm.clearSelectedFiles();
-        Assertions.assertEquals("", TextManager.generateText());
+        Assertions.assertEquals("", fm.generateText());
     }
 
     @Test
@@ -41,14 +40,18 @@ class TextManagerFilesTest {
         File testFile5 = null;
         File testFile6 = null;
         try {
-            testFile5 = fm.createFile(TEST_DIR_PATH, "test5");
-            testFile6 = fm.createFile(TEST_DIR_PATH, "test6.txt");
+            testFile5 = fm.createFile("test5");
+            testFile6 = fm.createFile("test6.txt");
 
             Assertions.assertNotNull(testFile5);
             Assertions.assertNotNull(testFile6);
 
-            TextManagerWriter.write(testFile5,                   "Este archivo hay que eliminarlo");
-            TextManagerWriter.write(testFile6.getAbsolutePath(), "\tEste tambien.");
+            FileWriter fw5 = new FileWriter(testFile5);
+            fw5.write("Este archivo hay que eliminarlo");
+            fw5.close();
+            FileWriter fw6 = new FileWriter(testFile6);
+            fw6.write("\tEste tambien.");
+            fw6.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

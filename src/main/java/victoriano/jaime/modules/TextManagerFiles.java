@@ -1,41 +1,73 @@
 package victoriano.jaime.modules;
 
+import javax.swing.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 //Esta Clase deberia solo listar y seleccionar archivos
 public class TextManagerFiles {
 //    TODO Debe ser el path completo
-    private static Set<String> searchDirectoryPathList = new HashSet<>();
+    private static File searchDirectory;
     private static List<File> selectedFileList = new ArrayList<>();
+    private static DefaultListModel<String> fileDefaultListModel = new DefaultListModel<>();
+    private static DefaultComboBoxModel<String> fileDefaultComboBoxModel = new DefaultComboBoxModel<>();
 
-    public TextManagerFiles(String... directoriesPath) {
-        setDirectories(directoriesPath);
+
+    public static TextManagerFiles build(String directoryPath) {
+        Path path = Paths.get(directoryPath);
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        File directory = new File(directoryPath);
+        return new TextManagerFiles(directory);
+    }
+    public TextManagerFiles(File searchDirectory) {
+        this.searchDirectory = searchDirectory;
     }
 
-    public void setDirectories(String... directoriesPath) {
-        searchDirectoryPathList = Set.of(directoriesPath);
+    public void setDirectory(File directory) {
+        searchDirectory = directory;
         getFiles();
     }
 
 //    Se debe llamar para cada vez que toque la lista de archivos, para tenerlos a tiempo real y evitar problemas
-    public static List<File> getFiles() {
+//    Recupera SOLO los archivos .TXT
+    public List<File> getFiles() {
         List<File> fileList = new ArrayList<>();
         FilenameFilter filter = (directory, name) -> name.endsWith(ExtensionsType.TEXT.toString());
 
-        for (String directoryPath : searchDirectoryPathList) {
-            // TODO Decidir que hacer con los archivos / directorios que no existan
-            File directory = new File(directoryPath);
-            File[] files = directory.listFiles(filter);
+        // TODO Decidir que hacer con los archivos / directorios que no existan
+        File[] files = searchDirectory.listFiles(filter);
 
-            fileList.addAll(List.of(files));
-        }
+        fileList.addAll(List.of(files));
 
         return fileList;
     }
 
-    public static List<File> getSelectedFiles() {
+    public List<String> getFilenames() {
+        List<String> filenameList = new ArrayList<>();
+        for (File file : getFiles()) {
+            filenameList.add(file.getName().substring(0, file.getName().length()-4));
+        }
+        return filenameList;
+    }
+
+    public List<File> getSelectedFiles() {
         return selectedFileList;
+    }
+
+    public List<String> getSelectedFilenames() {
+        List<String> filenameList = new ArrayList<>();
+        for (File file : selectedFileList) {
+            filenameList.add(file.getName().substring(0, file.getName().length()-4));
+        }
+        return filenameList;
     }
 
     public void selectFile(String filename) {
@@ -46,18 +78,14 @@ public class TextManagerFiles {
         selectedFileList = new ArrayList<>();
     }
 
-    public File createFile(String directoryTarget, String filename) throws IOException {
-        Optional<String> directoryOpt = searchDirectoryPathList.stream().filter(directory -> directory.equals(directoryTarget)).findFirst();
-        if (!directoryOpt.isPresent()) {
-            searchDirectoryPathList.add(directoryTarget);
-        }
-        File newFile = new File(directoryTarget + '/' + normalizeFilename(filename));
+    public File createFile(String filename) throws IOException {
+        File newFile = new File(searchDirectory.getAbsolutePath() + '/' + normalizeFilename(filename));
         newFile.createNewFile();
 
         return newFile;
     }
 
-    protected static File getFile(String filename) {
+    public File getFile(String filename) {
         String normalizedName = normalizeFilename(filename);
         Optional<File> optFile = getFiles().stream().filter(file -> normalizedName.endsWith(file.getName())).findFirst();
 
@@ -66,6 +94,17 @@ public class TextManagerFiles {
         }
 
         return optFile.get();
+    }
+
+    public String generateText() {
+        List<File> selectedFileList = getSelectedFiles();
+        StringBuilder sb = new StringBuilder();
+
+        for (File file : selectedFileList) {
+            sb.append(TextManagerReader.read(file) + '\n');
+        }
+
+        return sb.toString();
     }
 
     private static String normalizeFilename(String filename) {
