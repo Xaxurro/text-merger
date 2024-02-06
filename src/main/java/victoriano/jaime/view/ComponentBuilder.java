@@ -1,16 +1,9 @@
 package victoriano.jaime.view;
 
-import victoriano.jaime.modules.GBConstrains;
-import victoriano.jaime.modules.TextManagerFiles;
-import victoriano.jaime.modules.TextManagerReader;
+import victoriano.jaime.modules.TextManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public final class ComponentBuilder {
     public static JTextField txtFileSearcher () {
@@ -19,12 +12,9 @@ public final class ComponentBuilder {
         return txtFileSearcher;
     }
 
-    public static JComboBox cbbFilesAvailible (TextManagerFiles files) {
+    public static JComboBox cbbFilesAvailible (TextManager files) {
         JComboBox cbbFilesAvailible = new JComboBox();
-        DefaultComboBoxModel<String> dcmFilesAvailible = new DefaultComboBoxModel<>();
-        dcmFilesAvailible.addAll(files.getFilenames());
-        cbbFilesAvailible.setModel(dcmFilesAvailible);
-        cbbFilesAvailible.setSelectedIndex(0);
+        cbbFilesAvailible.setModel(files.getTextFilenameModel());
         return cbbFilesAvailible;
     }
 
@@ -44,11 +34,9 @@ public final class ComponentBuilder {
         return scpFileText;
     }
 
-    public static JList lstSelectedFiles(TextManagerFiles files) {
+    public static JList lstSelectedFiles(TextManager files) {
         JList lstSelectedFiles = new JList<>();
-        DefaultListModel dlmSelectedFiles = new DefaultListModel<>();
-        dlmSelectedFiles.addAll(files.getSelectedFiles());
-        lstSelectedFiles.setModel(dlmSelectedFiles);
+        lstSelectedFiles.setModel(files.getSelectedFilenamesModel());
         lstSelectedFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lstSelectedFiles.setVisibleRowCount(10);
 //        lstSelectedFiles.setDragEnabled(true);

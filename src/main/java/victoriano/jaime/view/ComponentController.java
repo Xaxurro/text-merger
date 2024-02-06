@@ -1,9 +1,11 @@
 package victoriano.jaime.view;
 
-import victoriano.jaime.modules.TextManagerFiles;
-import victoriano.jaime.modules.TextManagerReader;
+import victoriano.jaime.modules.TextManager;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -12,7 +14,7 @@ import java.io.IOException;
 
 public final class ComponentController {
 
-    public static JButton btnSelectDirectory (TextManagerFiles files) {
+    public static JButton btnSelectDirectory (TextManager files) {
         JButton btnSelectDirectory = new JButton("Select Directory");
         btnSelectDirectory.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -30,14 +32,15 @@ public final class ComponentController {
         return btnSelectDirectory;
     }
 
-    public static void cbbFilesAvailible(JComboBox cbbFilesAvailible, JTextArea txaFileText, TextManagerFiles files) {
+    public static void cbbFilesAvailible(JComboBox cbbFilesAvailible, JTextArea txaFileText, TextManager files) {
         cbbFilesAvailible.addActionListener(e -> {
-            String text = TextManagerReader.read(files.getFile((String) cbbFilesAvailible.getSelectedItem()));
+            String text = files.read(files.getFile((String) cbbFilesAvailible.getSelectedItem()));
             txaFileText.setText(text);
         });
+        cbbFilesAvailible.setSelectedIndex(0);
     }
 
-    public static void txaFileText(JTextArea txaFileText, JComboBox cbbFilesAvailible, TextManagerFiles files) {
+    public static void txaFileText(JTextArea txaFileText, JComboBox cbbFilesAvailible, TextManager files) {
         txaFileText.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -61,13 +64,13 @@ public final class ComponentController {
         });
     }
 
-    public static JButton btnCreateFile(JComboBox cbbFilesAvailible, TextManagerFiles files) {
+    public static JButton btnCreateFile(JComboBox cbbFilesAvailible, TextManager files) {
         JButton btnCreateFile = new JButton("Create a File");
         btnCreateFile.addActionListener(e -> {
             String filename = JOptionPane.showInputDialog(btnCreateFile, "File Name:");
             try {
                 files.createFile(filename);
-
+                cbbFilesAvailible.setModel(files.getTextFilenameModel());
                 cbbFilesAvailible.setSelectedItem(filename);
             } catch (IOException ex) {
 //                TODO DIALOGO DE ERROR
@@ -77,14 +80,22 @@ public final class ComponentController {
         return btnCreateFile;
     }
 
-    public static JButton btnSelectFile(JComboBox cbbFilesAvailible, JList lstSelectedFiles, TextManagerFiles files) {
+    public static JButton btnSelectFile(JComboBox cbbFilesAvailible, JList lstSelectedFiles, TextManager files) {
         JButton btnCreateFile = new JButton("Add File to Text");
         btnCreateFile.addActionListener(e -> {
             files.selectFile((String) cbbFilesAvailible.getSelectedItem());
-            DefaultListModel<String> model = (DefaultListModel<String>) lstSelectedFiles.getModel();
-            model.removeAllElements();
-            model.addAll(files.getSelectedFilenames());
         });
         return btnCreateFile;
+    }
+
+    public static JButton btnGenerateText(TextManager files) {
+        JButton btnGenerateText = new JButton("Generate Text");
+        btnGenerateText.addActionListener(e -> {
+            String generatedText = files.generateText();
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            StringSelection selection = new StringSelection(generatedText);
+            clipboard.setContents(selection, selection);
+        });
+        return btnGenerateText;
     }
 }

@@ -1,18 +1,17 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import victoriano.jaime.modules.TextManagerReader;
-import victoriano.jaime.modules.TextManagerFiles;
+import victoriano.jaime.modules.TextManager;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class TextManagerFilesTest {
+class TextManagerTest {
 
     final File TEST_DIR_PATH = new File("src/test/resources/group 1");
     @Test
     void test1_selectionSpecialCharacters() {
-        TextManagerFiles fm = new TextManagerFiles(TEST_DIR_PATH);
+        TextManager fm = new TextManager(TEST_DIR_PATH);
         fm.selectFile("test3");
         Assertions.assertEquals("test\n\n3\n", fm.generateText());
         fm.selectFile("test1");
@@ -23,7 +22,7 @@ class TextManagerFilesTest {
 
     @Test
     void test2_selection() {
-        TextManagerFiles fm = new TextManagerFiles(TEST_DIR_PATH);
+        TextManager fm = new TextManager(TEST_DIR_PATH);
         fm.selectFile("test1");
         fm.selectFile("test2");
         fm.selectFile("test1");
@@ -35,7 +34,7 @@ class TextManagerFilesTest {
 
     @Test
     void test3_writing() {
-        TextManagerFiles fm = new TextManagerFiles(TEST_DIR_PATH);
+        TextManager fm = new TextManager(TEST_DIR_PATH);
 
         File testFile5 = null;
         File testFile6 = null;
@@ -56,8 +55,8 @@ class TextManagerFilesTest {
             throw new RuntimeException(e);
         }
 
-        Assertions.assertEquals("Este archivo hay que eliminarlo", TextManagerReader.read(testFile5));
-        Assertions.assertEquals("\tEste tambien.",                 TextManagerReader.read(testFile6));
+        Assertions.assertEquals("Este archivo hay que eliminarlo", fm.read(testFile5));
+        Assertions.assertEquals("\tEste tambien.",                 fm.read(testFile6));
 
         Assertions.assertEquals(true, testFile5.delete());
         Assertions.assertEquals(true, testFile6.delete());

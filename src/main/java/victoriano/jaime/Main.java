@@ -1,6 +1,5 @@
 package victoriano.jaime;
 
-import victoriano.jaime.modules.TextManagerFiles;
 import victoriano.jaime.view.TextMergerFrame;
 
 public class Main {
