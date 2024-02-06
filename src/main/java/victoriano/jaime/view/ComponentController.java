@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -13,6 +15,25 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public final class ComponentController {
+    public static void txtFileSearcher(JTextField txtFileSearcher, JComboBox cbbFilesAvailible, TextManager files) {
+        txtFileSearcher.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String search = txtFileSearcher.getText();
+                files.setActualTextFilenameSearch(search);
+                cbbFilesAvailible.setModel(files.getTextFilenameModel());
+                cbbFilesAvailible.setSelectedIndex(0);
+            }
+        });
+    }
 
     public static JButton btnSelectDirectory (TextManager files) {
         JButton btnSelectDirectory = new JButton("Select Directory");
@@ -60,6 +81,16 @@ public final class ComponentController {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+            }
+        });
+
+//        TODO hacer que el txaFileText pueda resizearse
+        txaFileText.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                // Si deseas imprimir el nuevo tamaño del textArea cuando se redimensiona:
+//                JTextArea textArea = (JTextArea) e.getComponent();
+//                System.out.println("Nuevo tamaño del textArea: " + textArea.getSize());
             }
         });
     }

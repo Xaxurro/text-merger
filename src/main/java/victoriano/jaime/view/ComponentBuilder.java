@@ -22,6 +22,7 @@ public final class ComponentBuilder {
         JTextArea txaFileText = new JTextArea("", 10, 20);
 
         txaFileText.setLineWrap(true);
+        txaFileText.setWrapStyleWord(true);
         txaFileText.setTabSize(4);
 
         return txaFileText;
@@ -30,7 +31,6 @@ public final class ComponentBuilder {
     public static JScrollPane scrollPane(JTextArea txaFileText) {
         JScrollPane scpFileText = new JScrollPane(txaFileText);
         scpFileText.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scpFileText.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         return scpFileText;
     }
 

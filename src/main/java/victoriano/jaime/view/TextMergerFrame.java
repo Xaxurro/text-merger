@@ -61,6 +61,7 @@ public class TextMergerFrame extends JFrame{
 
         ComponentController.txaFileText(txaFileText, cbbFilesAvailible, files);
         ComponentController.cbbFilesAvailible(cbbFilesAvailible, txaFileText, files);
+        ComponentController.txtFileSearcher(txtFileSearcher, cbbFilesAvailible, files);
 
 
         add(pnl);

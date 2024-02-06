@@ -10,6 +10,7 @@ import java.util.*;
 //Esta Clase deberia solo listar y seleccionar archivos
 public class TextManager {
 //    TODO Debe ser el path completo
+    private static String actualTextFilenameSearch = "";
     private static File searchDirectory;
     private static DefaultListModel<String> selectedFilenameListModel = new DefaultListModel<>();
     private static DefaultComboBoxModel<String> allFilenamesModel = new DefaultComboBoxModel<>();
@@ -35,24 +36,28 @@ public class TextManager {
 //        TODO REFRESH
     }
 
-//    Se debe llamar para cada vez que toque la lista de archivos, para tenerlos a tiempo real y evitar problemas
-//    Recupera SOLO los archivos .TXT
-    public List<File> getFileList() {
-        List<File> fileList = new ArrayList<>();
+////    Se debe llamar para cada vez que toque la lista de archivos, para tenerlos a tiempo real y evitar problemas
+////    Recupera SOLO los archivos .TXT
+//    public List<File> getFileList() {
+//        List<File> fileList = new ArrayList<>();
+//
+//        DefaultComboBoxModel<String> textFilesModel = getTextFilenameModel();
+//        for (int i = 0; i < textFilesModel.getSize(); i++) {
+//            String filename = textFilesModel.getElementAt(i);
+//            fileList.add(getFile(filename));
+//        }
+//
+//
+//        return fileList;
+//    }
 
-        DefaultComboBoxModel<String> textFilesModel = getTextFilenameModel();
-        for (int i = 0; i < textFilesModel.getSize(); i++) {
-            String filename = textFilesModel.getElementAt(i);
-            fileList.add(getFile(filename));
-        }
-
-
-        return fileList;
+    public void setActualTextFilenameSearch(String search) {
+        this.actualTextFilenameSearch = search;
     }
     
     public DefaultComboBoxModel<String> getTextFilenameModel() {
-        FilenameFilter filter = (directory, name) -> name.endsWith(ExtensionsType.TEXT.toString());
-        // TODO Decidir que hacer con los archivos / directorios que no existan
+//        Primero veficia si es que termian con la extension de los archivos de texto, y luego verifica el nombre del archivo (sin extension) para ver si coincide con la busqueda
+        FilenameFilter filter = (directory, name) -> name.endsWith(ExtensionsType.TEXT.toString()) && name.substring(0, name.length()-4).contains(actualTextFilenameSearch);
         File[] textFiles = searchDirectory.listFiles(filter);
 
         DefaultComboBoxModel<String> dcmTextFiles = new DefaultComboBoxModel<>();
