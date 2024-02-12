@@ -51,16 +51,17 @@ public class TextManager {
 //        return fileList;
 //    }
 
-    public void setActualTextFilenameSearch(String search) {
+    public void setTextFilenameSearch(String search) {
         this.actualTextFilenameSearch = search;
     }
     
-    public DefaultComboBoxModel<String> getTextFilenameModel() {
-//        Primero veficia si es que termian con la extension de los archivos de texto, y luego verifica el nombre del archivo (sin extension) para ver si coincide con la busqueda
-        FilenameFilter filter = (directory, name) -> name.endsWith(ExtensionsType.TEXT.toString()) && name.substring(0, name.length()-4).contains(actualTextFilenameSearch);
+    public DefaultListModel<String> getTextFilenameModel() {
+//        1.- veficia si es que termian con la extension de los archivos de texto
+//        2.- verifica el nombre del archivo (sin extension) para ver si coincide con la busqueda
+        FilenameFilter filter = (directory, name) -> name.endsWith(FileExtensions.TEXT.toString()) && name.substring(0, name.length()-4).contains(actualTextFilenameSearch);
         File[] textFiles = searchDirectory.listFiles(filter);
 
-        DefaultComboBoxModel<String> dcmTextFiles = new DefaultComboBoxModel<>();
+        DefaultListModel<String> dcmTextFiles = new DefaultListModel<>();
         for (File file : textFiles) {
             dcmTextFiles.addElement(file.getName().substring(0, file.getName().length()-4));
         }
@@ -137,9 +138,9 @@ public class TextManager {
     }
 
     private static String normalizeTextFilename(String filename) {
-        return filename.endsWith(ExtensionsType.TEXT.toString()) ? filename : filename + ExtensionsType.TEXT;
+        return filename.endsWith(FileExtensions.TEXT.toString()) ? filename : filename + FileExtensions.TEXT;
     }
     private static String normalizePresetFilename(String filename) {
-        return filename.endsWith(ExtensionsType.PRESET.toString()) ? filename : filename + ExtensionsType.PRESET;
+        return filename.endsWith(FileExtensions.PRESET.toString()) ? filename : filename + FileExtensions.PRESET;
     }
 }

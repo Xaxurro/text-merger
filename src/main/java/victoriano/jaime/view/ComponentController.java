@@ -3,6 +3,8 @@ package victoriano.jaime.view;
 import victoriano.jaime.modules.TextManager;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -15,7 +17,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public final class ComponentController {
-    public static void txtFileSearcher(JTextField txtFileSearcher, JComboBox cbbFilesAvailible, TextManager files) {
+    TextManager files;
+    JTextField txtFileSearcher;
+    JList<String> lstFilesAvailible;
+    JTextArea txaFileText;
+    JList<String> lstSelectedFiles;
+
+    public ComponentController(TextManager files, JTextField txtFileSearcher, JList<String> lstFilesAvailible, JTextArea txaFileText, JList<String> lstSelectedFiles) {
+        this.files = files;
+        this.txtFileSearcher = txtFileSearcher;
+        this.lstFilesAvailible = lstFilesAvailible;
+        this.txaFileText = txaFileText;
+        this.lstSelectedFiles = lstSelectedFiles;
+    }
+
+    public void txtFileSearcher() {
         txtFileSearcher.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -28,14 +44,13 @@ public final class ComponentController {
             @Override
             public void keyReleased(KeyEvent e) {
                 String search = txtFileSearcher.getText();
-                files.setActualTextFilenameSearch(search);
-                cbbFilesAvailible.setModel(files.getTextFilenameModel());
-                cbbFilesAvailible.setSelectedIndex(0);
+                files.setTextFilenameSearch(search);
+                refresh();
             }
         });
     }
 
-    public static JButton btnSelectDirectory (TextManager files) {
+    public JButton btnSelectDirectory () {
         JButton btnSelectDirectory = new JButton("Select Directory");
         btnSelectDirectory.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -46,22 +61,28 @@ public final class ComponentController {
             if (result == JFileChooser.APPROVE_OPTION) {
                 File newDirectory = fileChooser.getSelectedFile();
                 files.setDirectory(newDirectory);
-//                TODO REFRESH
+                refresh();
             }
         });
 
         return btnSelectDirectory;
     }
 
-    public static void cbbFilesAvailible(JComboBox cbbFilesAvailible, JTextArea txaFileText, TextManager files) {
-        cbbFilesAvailible.addActionListener(e -> {
-            String text = files.read(files.getFile((String) cbbFilesAvailible.getSelectedItem()));
-            txaFileText.setText(text);
+    public void lstFilesAvailible() {
+        lstFilesAvailible.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (lstFilesAvailible.getSelectedValue() == null) {
+                    return;
+                }
+                String text = files.read(files.getFile(lstFilesAvailible.getSelectedValue()));
+                txaFileText.setText(text);
+            }
         });
-        cbbFilesAvailible.setSelectedIndex(0);
+        refresh();
     }
 
-    public static void txaFileText(JTextArea txaFileText, JComboBox cbbFilesAvailible, TextManager files) {
+    public void txaFileText() {
         txaFileText.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -73,7 +94,7 @@ public final class ComponentController {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                File file = files.getFile((String) cbbFilesAvailible.getSelectedItem());
+                File file = files.getFile(lstFilesAvailible.getSelectedValue());
                 try {
                     FileWriter fw = new FileWriter(file);
                     fw.write(txaFileText.getText());
@@ -88,21 +109,29 @@ public final class ComponentController {
         txaFileText.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // Si deseas imprimir el nuevo tamaño del textArea cuando se redimensiona:
-//                JTextArea textArea = (JTextArea) e.getComponent();
-//                System.out.println("Nuevo tamaño del textArea: " + textArea.getSize());
             }
         });
     }
 
-    public static JButton btnCreateFile(JComboBox cbbFilesAvailible, TextManager files) {
+    public void lstSelectedFiles() {
+        lstSelectedFiles.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                String filename = lstSelectedFiles.getSelectedValue();
+                clearSearch();
+                lstFilesAvailible.setSelectedValue(filename, true);
+            }
+        });
+    }
+
+    public JButton btnCreateFile() {
         JButton btnCreateFile = new JButton("Create a File");
         btnCreateFile.addActionListener(e -> {
             String filename = JOptionPane.showInputDialog(btnCreateFile, "File Name:");
             try {
                 files.createFile(filename);
-                cbbFilesAvailible.setModel(files.getTextFilenameModel());
-                cbbFilesAvailible.setSelectedItem(filename);
+                refresh();
+                lstFilesAvailible.setSelectedValue(filename, true);
             } catch (IOException ex) {
 //                TODO DIALOGO DE ERROR
                 throw new RuntimeException(ex);
@@ -111,16 +140,17 @@ public final class ComponentController {
         return btnCreateFile;
     }
 
-    public static JButton btnSelectFile(JComboBox cbbFilesAvailible, JList lstSelectedFiles, TextManager files) {
+    public JButton btnSelectFile() {
         JButton btnCreateFile = new JButton("Add File to Text");
         btnCreateFile.addActionListener(e -> {
-            files.selectFile((String) cbbFilesAvailible.getSelectedItem());
+            files.selectFile(lstFilesAvailible.getSelectedValue());
         });
         return btnCreateFile;
     }
 
-    public static JButton btnGenerateText(TextManager files) {
+    public JButton btnGenerateText() {
         JButton btnGenerateText = new JButton("Generate Text");
+//      Copy to Clipboard
         btnGenerateText.addActionListener(e -> {
             String generatedText = files.generateText();
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -128,5 +158,17 @@ public final class ComponentController {
             clipboard.setContents(selection, selection);
         });
         return btnGenerateText;
+    }
+
+    public void refresh() {
+        lstFilesAvailible.setModel(files.getTextFilenameModel());
+        lstFilesAvailible.setSelectedIndex(0);
+    }
+
+    public void clearSearch() {
+        files.setTextFilenameSearch("");
+        txtFileSearcher.setText("");
+        refresh();
+//        lstSelectedFiles.setse; TODO unselect list
     }
 }

@@ -1,6 +1,6 @@
 package victoriano.jaime.modules;
 
-public enum ExtensionsType {
+public enum FileExtensions {
     TEXT,
     DIRECTORY,
 

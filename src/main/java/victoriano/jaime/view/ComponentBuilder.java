@@ -12,10 +12,12 @@ public final class ComponentBuilder {
         return txtFileSearcher;
     }
 
-    public static JComboBox cbbFilesAvailible (TextManager files) {
-        JComboBox cbbFilesAvailible = new JComboBox();
-        cbbFilesAvailible.setModel(files.getTextFilenameModel());
-        return cbbFilesAvailible;
+    public static JList<String> lstFilesAvailible(TextManager files) {
+        JList<String> lstFilesAvailible = new JList<String>();
+        lstFilesAvailible.setModel(files.getTextFilenameModel());
+        lstFilesAvailible.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        lstFilesAvailible.setVisibleRowCount(10);
+        return lstFilesAvailible;
     }
 
     public static JTextArea txaFileText () {
@@ -34,8 +36,8 @@ public final class ComponentBuilder {
         return scpFileText;
     }
 
-    public static JList lstSelectedFiles(TextManager files) {
-        JList lstSelectedFiles = new JList<>();
+    public static JList<String> lstSelectedFiles(TextManager files) {
+        JList<String> lstSelectedFiles = new JList<String>();
         lstSelectedFiles.setModel(files.getSelectedFilenamesModel());
         lstSelectedFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lstSelectedFiles.setVisibleRowCount(10);
